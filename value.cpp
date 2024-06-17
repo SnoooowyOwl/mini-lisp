@@ -102,6 +102,10 @@ std::string NumericValue::toString()
 double NumericValue::getValue() const {
     return value;
 }
+StringValue::StringValue(std::string s, bool raw)
+{
+    value = s;
+}
 StringValue::StringValue(const std::string& c) {
     std::stringstream sin;
     sin << std::quoted(c);

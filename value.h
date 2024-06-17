@@ -1,6 +1,7 @@
 #ifndef VALUE_H
 #define VALUE_H
 #include"./token.h"
+#include"./color.h"
 //#include"./eval_env.h"
 #include<string>
 #include<sstream>
@@ -43,6 +44,7 @@ class StringValue : public Value {
         std::string getValue()const;
         StringValue(const std::string& c);
       std::string toString();
+        StringValue(std::string s,bool raw);
 };
 class NilValue : public Value {
     public:

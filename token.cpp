@@ -1,5 +1,4 @@
 #include "./token.h"
-
 #include <iomanip>
 #include <sstream>
 
@@ -25,12 +24,12 @@ TokenPtr Token::dot() {
 
 std::string Token::toString() const {
     switch (type) {
-        case TokenType::LEFT_PAREN: return "(LEFT_PAREN)"; break;
-        case TokenType::RIGHT_PAREN: return "(RIGHT_PAREN)"; break;
-        case TokenType::QUOTE: return "(QUOTE)"; break;
-        case TokenType::QUASIQUOTE: return "(QUASIQUOTE)"; break;
-        case TokenType::UNQUOTE: return "(UNQUOTE)"; break;
-        case TokenType::DOT: return "(DOT)"; break;
+        case TokenType::LEFT_PAREN: return "("; break;
+        case TokenType::RIGHT_PAREN: return ")"; break;
+        case TokenType::QUOTE: return "\'"; break;
+        case TokenType::QUASIQUOTE: return "\`"; break;
+        case TokenType::UNQUOTE: return ","; break;
+        case TokenType::DOT: return "."; break;
         default: return "(UNKNOWN)";
     }
 }
@@ -44,25 +43,26 @@ std::unique_ptr<BooleanLiteralToken> BooleanLiteralToken::fromChar(char c) {
         return nullptr;
     }
 }
-
 std::string BooleanLiteralToken::toString() const {
-    return "(BOOLEAN_LITERAL "s + (value ? "true" : "false") + ")";
+    return (value ? "#t" : "#f");
 }
-
 std::string NumericLiteralToken::toString() const {
-    return "(NUMERIC_LITERAL " + std::to_string(value) + ")";
+    std::string s;
+    if (fabs(value - (int)value) < 1e-5)
+        s = std::to_string((int)value);
+    else
+        s = std::to_string(value);
+    return s;
 }
 
 std::string StringLiteralToken::toString() const {
     std::ostringstream ss;
-    ss << "(STRING_LITERAL " << std::quoted(value) << ")";
+    ss << std::quoted(value);
     return ss.str();
 }
-
 std::string IdentifierToken::toString() const {
-    return "(IDENTIFIER " + name + ")";
+    return name;
 }
-
 std::ostream& operator<<(std::ostream& os, const Token& token) {
     return os << token.toString();
 }

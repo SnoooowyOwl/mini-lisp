@@ -5,7 +5,7 @@
 bool judgelist(ValuePtr p);
 bool isequal(ValuePtr x, ValuePtr y);
 
-extern std::unordered_map<std::string, std::shared_ptr<BuiltinProValue>> BuiltinFuncsList;
+extern std::unordered_map<std::string, BuiltinProValue> BuiltinFuncsList;
     
 ValuePtr Apply(const std::vector<ValuePtr>& params, EvalEnv& env);  //apply
 ValuePtr display(const std::vector<ValuePtr>& params, EvalEnv& env);    //display

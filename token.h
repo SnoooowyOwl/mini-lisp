@@ -5,7 +5,6 @@
 #include <optional>
 #include <ostream>
 #include <string>
-
 enum class TokenType {
     LEFT_PAREN,
     RIGHT_PAREN,
@@ -17,6 +16,8 @@ enum class TokenType {
     NUMERIC_LITERAL,
     STRING_LITERAL,
     IDENTIFIER,
+ //   space,//新加的，用来记录到底空了几个格
+  //  notes,//新加的，代表注释
 };
 
 class Token;
@@ -25,16 +26,12 @@ using TokenPtr = std::unique_ptr<Token>;
 class Token {
 private:
     TokenType type;
-
 protected:
     Token(TokenType type) : type{type} {}
-
 public:
     virtual ~Token() = default;
-
     static TokenPtr fromChar(char c);
     static TokenPtr dot();
-
     TokenType getType() const {
         return type;
     }
@@ -44,8 +41,8 @@ public:
 class BooleanLiteralToken : public Token {
 private:
     bool value;
-
 public:
+    
     BooleanLiteralToken(bool value) : Token(TokenType::BOOLEAN_LITERAL), value{value} {}
 
     static std::unique_ptr<BooleanLiteralToken> fromChar(char c);
@@ -62,7 +59,6 @@ private:
 
 public:
     NumericLiteralToken(double value) : Token(TokenType::NUMERIC_LITERAL), value{value} {}
-
     double getValue() const {
         return value;
     }
@@ -72,7 +68,6 @@ public:
 class StringLiteralToken : public Token {
 private:
     std::string value;
-
 public:
     StringLiteralToken(const std::string& value) : Token(TokenType::STRING_LITERAL), value{value} {}
 
@@ -85,16 +80,30 @@ public:
 class IdentifierToken : public Token {
 private:
     std::string name;
-
 public:
     IdentifierToken(const std::string& name) : Token(TokenType::IDENTIFIER), name{name} {}
-
     const std::string& getName() const {
         return name;
     }
     std::string toString() const override;
 };
 
-std::ostream& operator<<(std::ostream& os, const Token& token);
+/*
+class SpaceToken : public Token {
+private:
+    std::string space;
+public:
+    SpaceToken(const std::string& s): Token(TokenType::space), space{s} {}
+    std::string getinner();
+};
+class noteToken : public Token {
+private:
+    std::string Note;
 
+public:
+    noteToken(const std::string& s) : Token(TokenType::notes), Note{s} {}
+    std::string toString()const;
+};
+std::ostream& operator<<(std::ostream& os, const Token& token);
+*/
 #endif

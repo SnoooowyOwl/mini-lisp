@@ -89,8 +89,10 @@ ValuePtr quoteForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
 }
 ValuePtr ifForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
     auto result = env.eval(args[0]);
+   // if (args.size() != 3) throw LispError("invalid number of arguments");
     if (typeid(*result) == typeid(BooleanValue))
     {
+         
          auto& v = static_cast<BooleanValue&>(*result);
          if (!v.getValue())
          {
@@ -167,7 +169,7 @@ ValuePtr condForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
                  if (typeid(*condition) == typeid(BooleanValue)) {
                      if (static_cast<BooleanValue&>(*condition).getValue() == 1)
                      {
-                             result = env.eval(expr->toVector()[0]);//这个【0】可能是解析不正确导致的
+                             result = env.eval(expr->toVector()[0]);//这个【0】
                          break;
                      }  
                  } 
@@ -201,6 +203,11 @@ ValuePtr letForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
     {
         if (typeid(*(*i)) == typeid(PairValue)) {
              auto& pair = static_cast<PairValue&>(*(*i));
+             int len = static_cast<PairValue&>(*(*i)).toVector().size();
+             if (len < 2)
+                 throw LispError("not enough arguments");
+             else if (len > 2)
+                 throw LispError("too many arguments");
              if (typeid(*pair.getCar()) == typeid(SymbolValue)) {
 
                  params.push_back(static_cast<SymbolValue&>(*pair.getCar()).getName());

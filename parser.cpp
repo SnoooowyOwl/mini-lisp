@@ -9,7 +9,10 @@ Parser::Parser(std::deque<TokenPtr> tokens) : tokens{std::move(tokens)} {
 
 }
 ValuePtr Parser::parse() {
-    if (tokens.empty()) throw SyntaxError("Unimplemented");
+    if (tokens.empty()) {
+        return std::make_shared<NilValue>();
+       // throw SyntaxError("Unimplemented");
+    }
      auto& token=tokens.front() ;
     if (token->getType() == TokenType::NUMERIC_LITERAL) {
          auto value = static_cast<NumericLiteralToken&>(*token).getValue();
@@ -31,7 +34,7 @@ ValuePtr Parser::parse() {
         tokens.pop_front();
         return std::make_shared<SymbolValue>(value);
     } 
-    if (token->getType() == TokenType::QUOTE)//也许需要更高层次抽象，重复代码
+    if (token->getType() == TokenType::QUOTE)
     {
         tokens.pop_front();
         return std::make_shared<PairValue>(
@@ -39,7 +42,7 @@ ValuePtr Parser::parse() {
             std::make_shared<PairValue>(this->parse(),
                                         std::make_shared<NilValue>()));
     }
-    if (token->getType() == TokenType::QUASIQUOTE)  // 也许需要更高层次抽象，重复代码
+    if (token->getType() == TokenType::QUASIQUOTE)  
     {
         tokens.pop_front();
         return std::make_shared<PairValue>(
@@ -47,7 +50,7 @@ ValuePtr Parser::parse() {
             std::make_shared<PairValue>(this->parse(),
                                         std::make_shared<NilValue>()));
     }
-    if (token->getType() == TokenType::UNQUOTE)  // 也许需要更高层次抽象，重复代码
+    if (token->getType() == TokenType::UNQUOTE) 
     {
         tokens.pop_front();
         return std::make_shared<PairValue>(

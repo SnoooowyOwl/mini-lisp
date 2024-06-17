@@ -1,5 +1,5 @@
 #include "./tokenizer.h"
-
+#include<iostream>
 #include <cctype>
 #include <set>
 #include <stdexcept>
@@ -8,26 +8,36 @@
 
 const std::set<char> TOKEN_END{'(', ')', '\'', '`', ',', '"'};
 
-TokenPtr Tokenizer::nextToken(int& pos) {
+TokenPtr Tokenizer::nextToken(int& pos,bool raw,bool finalraw) {
     while (pos < input.size()) {
         auto c = input[pos];
         if (c == ';') {
+            std::string sentence;
             while (pos < input.size() && input[pos] != '\n') {
+                sentence += std::string{input[pos]};
                 pos++;
             }
-        } else if (std::isspace(c)) {
-            pos++;
-        } else if (auto token = Token::fromChar(c)) {
+        } 
+        else if (std::isspace(c)) {
+            while (pos < input.size() && std::isspace(input[pos]))
+            {
+                pos++;
+            }
+        } 
+        else if (auto token = Token::fromChar(c)) {
             pos++;
             return token;
-        } else if (c == '#') {
-            if (auto result = BooleanLiteralToken::fromChar(input[pos + 1])) {
+        } 
+        else if (c == '#') {
+          if (auto result = BooleanLiteralToken::fromChar(input[pos + 1])) {
                 pos += 2;
                 return result;
-            } else {
+           } 
+            else {
                 throw SyntaxError("Unexpected character after #");
             }
-        } else if (c == '"') {
+        } 
+        else if (c == '"') {
             std::string string;
             pos++;
             while (pos < input.size()) {
@@ -39,9 +49,13 @@ TokenPtr Tokenizer::nextToken(int& pos) {
                         throw SyntaxError("Unexpected end of string literal");
                     }
                     auto next = input[pos + 1];
-                    if (next == 'n') {
+                    if (next == 'n') {//racket里面是+="\\n"
                         string += '\n';
-                    } else {
+                    } 
+                    else if (next == 't') {//+="\\t"
+                        string += '\t';
+                    }
+                    else {
                         string += next;
                     }
                     pos += 2;
@@ -51,12 +65,12 @@ TokenPtr Tokenizer::nextToken(int& pos) {
                 }
             }
             throw SyntaxError("Unexpected end of string literal");
-        } else {
+        } 
+        else {
             int start = pos;
             do {
                 pos++;
-            } while (pos < input.size() && !std::isspace(input[pos]) &&
-                     !TOKEN_END.contains(input[pos]));
+            } while (pos < input.size() && !std::isspace(input[pos]) &&!TOKEN_END.contains(input[pos]));
             auto text = input.substr(start, pos - start);
             if (text == ".") {
                 return Token::dot();
@@ -73,11 +87,11 @@ TokenPtr Tokenizer::nextToken(int& pos) {
     return nullptr;
 }
 
-std::deque<TokenPtr> Tokenizer::tokenize() {
+std::deque<TokenPtr> Tokenizer::tokenize(bool raw,bool finalraw) {//是否解析的是原始字符串，也即是解析出来的含不含空白字符
     std::deque<TokenPtr> tokens;
     int pos = 0;
     while (true) {
-        auto token = nextToken(pos);
+        auto token = nextToken(pos,raw,finalraw);
         if (!token) {
             break;
         }
@@ -86,6 +100,6 @@ std::deque<TokenPtr> Tokenizer::tokenize() {
     return tokens;
 }
 
-std::deque<TokenPtr> Tokenizer::tokenize(std::string input) {//const
-    return Tokenizer(input).tokenize();
+std::deque<TokenPtr> Tokenizer::tokenize(std::string input,bool raw,bool finalraw) {//const
+    return Tokenizer(input).tokenize(raw,finalraw);
 }

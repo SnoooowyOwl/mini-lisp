@@ -3,6 +3,7 @@
 #include"./builtins.h"
 #include"./token.h"
 #include"./forms.h"
+#include"./value.h"
 #include<algorithm>
 #include<iterator>
 #include<iostream>
@@ -10,18 +11,21 @@
 
 
 
-EvalEnv::EvalEnv(std::shared_ptr<EvalEnv> p,
-                 std::unordered_map<std::string, ValuePtr> S)
+EvalEnv::EvalEnv(std::shared_ptr<EvalEnv> p,std::unordered_map<std::string, ValuePtr> S)
     : parent{p}, SymbolList{S} {
  }
 void EvalEnv::defineBinding(std::string name, ValuePtr args)
-{///////////////////////////////////////这里的原始版本是this->eval(args)，为了解决lambda表达式中不可以对列表求值的问题
+{
     SymbolList.insert_or_assign(name,args );
     return;
 }
 EvalEnv::EvalEnv() {
     for (auto i : BuiltinFuncsList) {
-        SymbolList.insert(i);
+
+
+        std::pair<std::string, std::shared_ptr<BuiltinProValue>> temp = { 
+            i.first, std::make_shared<BuiltinProValue>(i.second)};
+        SymbolList.insert(temp);
     }
 }
 ValuePtr EvalEnv::eval(ValuePtr expr) {
@@ -47,8 +51,8 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
             if (auto name = v[0]->asSymbol()) {
                 if (SPECIAL_FORMS.find(*name)!= SPECIAL_FORMS.end()) {
 
-                    auto v1 = expression.getCdr()->toVector();  // 用来检查
-                    return SPECIAL_FORMS.at(*name)(v1, *this);//此处有问题
+                    auto v1 = expression.getCdr()->toVector(); 
+                    return SPECIAL_FORMS.at(*name)(v1, *this);
                 } 
                 else {
                     ValuePtr proc = this->eval(v[0]);
@@ -89,16 +93,15 @@ ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr>args)
     else if (typeid(*proc) == typeid(LambdaValue))
     {
         auto& lambda = static_cast<LambdaValue&>(*proc);
-        //auto inner = createChild()
         return lambda.apply(args);
     }
     else {
     throw LispError("Unknown procedure");
     }
 }
+/*
 ValuePtr EvalEnv::lookupBinding(std::string name)
 {
-    
         auto value = SymbolList.find(name);
             if (value != SymbolList.end()) {
                 return value->second;
@@ -111,6 +114,7 @@ ValuePtr EvalEnv::lookupBinding(std::string name)
              throw LispError("Variable " + name + " not defined.");
             }
 }
+*/
 void EvalEnv::setParent(std::shared_ptr<EvalEnv> p)
 {
             parent = p;

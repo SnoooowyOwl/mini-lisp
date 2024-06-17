@@ -3,63 +3,63 @@
 #include"./eval_env.h"
 #include<cmath>
 #include<iostream>
- std::unordered_map<std::string, std::shared_ptr<BuiltinProValue>> BuiltinFuncsList{
-    {"+",std::make_shared<BuiltinProValue>(&add)}, 
-    {"print", std::make_shared<BuiltinProValue>(&print)},
-    {"*", std::make_shared<BuiltinProValue>(&mul)},
-    {">", std::make_shared<BuiltinProValue>(&isBigger)},
-    {"-", std::make_shared<BuiltinProValue>(&subtract)},
-    {"/", std::make_shared<BuiltinProValue>(&divide)},
-    {"abs", std::make_shared<BuiltinProValue>(&Abs)},
-    {"expt", std::make_shared<BuiltinProValue>(&expt)},
-    {"quotient", std::make_shared<BuiltinProValue>(&quotient)},
-    {"modulo", std::make_shared<BuiltinProValue>(&modulo)},
-    {"remainder", std::make_shared<BuiltinProValue>(&Remainder)},
-    {"eq?", std::make_shared<BuiltinProValue>(&eq)},
-    {"equal?", std::make_shared<BuiltinProValue>(&equal)},
-    {"not", std::make_shared<BuiltinProValue>(&Not)},
+ std::unordered_map<std::string, BuiltinProValue> BuiltinFuncsList{
+    {"+",&add}, 
+    {"print", &print},
+    {"*", &mul},
+    {">", &isBigger},
+    {"-", &subtract},
+    {"/", &divide},
+    {"abs", &Abs},
+    {"expt", &expt},
+    {"quotient", &quotient},
+    {"modulo", &modulo},
+    {"remainder", &Remainder},
+    {"eq?", &eq},
+    {"equal?", &equal},
+    {"not", &Not},
 
-    {"=", std::make_shared<BuiltinProValue>(&Equal)},
-    {"<", std::make_shared<BuiltinProValue>(&isSmaller)},
-    {">=", std::make_shared<BuiltinProValue>(&isEqualBigger)},
-    {"<=", std::make_shared<BuiltinProValue>(&isEqualSmaller)},
-    {"even?", std::make_shared<BuiltinProValue>(&even)},
-    {"odd?", std::make_shared<BuiltinProValue>(&odd)},
-    {"zero?", std::make_shared<BuiltinProValue>(&zero)},
+    {"=", &Equal},
+    {"<", &isSmaller},
+    {">=", &isEqualBigger},
+    {"<=", &isEqualSmaller},
+    {"even?", &even},
+    {"odd?", &odd},
+    {"zero?", &zero},
 
-    {"append", std::make_shared<BuiltinProValue>(&append)},
-    {"car", std::make_shared<BuiltinProValue>(&car)},
-    {"cdr", std::make_shared<BuiltinProValue>(&cdr)},
-    {"cons", std::make_shared<BuiltinProValue>(&cons)},
-    {"length", std::make_shared<BuiltinProValue>(&length)},
-    {"list", std::make_shared<BuiltinProValue>(&mylist)},
-    {"map", std::make_shared<BuiltinProValue>(&map)},
-    {"filter", std::make_shared<BuiltinProValue>(&filter)},
-    {"reduce", std::make_shared<BuiltinProValue>(&reduce)},
+    {"append", &append},
+    {"car", &car},
+    {"cdr", &cdr},
+    {"cons", &cons},
+    {"length", &length},
+    {"list", &mylist},
+    {"map", &map},
+    {"filter", &filter},
+    {"reduce", &reduce},
 
-    {"atom?", std::make_shared<BuiltinProValue>(&atom)},
-    {"boolean?", std::make_shared<BuiltinProValue>(&boolean)},
-    {"integer?", std::make_shared<BuiltinProValue>(&integer)},
-    {"list?", std::make_shared<BuiltinProValue>(&islist)},
-    {"number?", std::make_shared<BuiltinProValue>(&number)},
-    {"null?", std::make_shared<BuiltinProValue>(&null)},
-    {"pair?", std::make_shared<BuiltinProValue>(&pair)},
-    {"procedure?", std::make_shared<BuiltinProValue>(&procedure)},
-    {"string?", std::make_shared<BuiltinProValue>(&string)},
-    {"symbol?", std::make_shared<BuiltinProValue>(&symbol)},
-    {"apply", std::make_shared<BuiltinProValue>(&Apply)},
-    {"display", std::make_shared<BuiltinProValue>(&display)},
-    {"displayln", std::make_shared<BuiltinProValue>(&displayLN)},
-    {"error", std::make_shared<BuiltinProValue>(&error)},
-    {"eval", std::make_shared<BuiltinProValue>(&myeval)},
-    {"exit", std::make_shared<BuiltinProValue>(&Exit)},
-    {"newline", std::make_shared<BuiltinProValue>(&newline)},
-    {"print", std::make_shared<BuiltinProValue>(&print)},
-    {"strcat", std::make_shared<BuiltinProValue>(&Strcat)} ,
-    {"strcmp", std::make_shared<BuiltinProValue>(&Strcmp)},
-        {"strlen", std::make_shared<BuiltinProValue>(&Strlen)},
-        {"strstr", std::make_shared<BuiltinProValue>(&Strstr)},
-        {"at", std::make_shared<BuiltinProValue>(&At)}
+    {"atom?", &atom},
+    {"boolean?", &boolean},
+    {"integer?", &integer},
+    {"list?", &islist},
+    {"number?", &number},
+    {"null?", &null},
+    {"pair?", &pair},
+    {"procedure?", &procedure},
+    {"string?", &string},
+    {"symbol?", &symbol},
+    {"apply", &Apply},
+    {"display", &display},
+    {"displayln", &displayLN},
+    {"error", &error},
+    {"eval", &myeval},
+    {"exit", &Exit},
+    {"newline", &newline},
+    {"print", &print},
+    {"strcat", &Strcat},
+    {"strcmp", &Strcmp},
+    {"strlen",&Strlen},
+    {"strstr", &Strstr},
+    {"at", &At}
     
  };
 ValuePtr Apply(const std::vector<ValuePtr>& params, EvalEnv& env)
@@ -93,8 +93,15 @@ ValuePtr display(const std::vector<ValuePtr>& params, EvalEnv& env) {
     else if (num < 1)
             throw LispError("not enough arguments");
     else {
-            print(params, env);
-            return std::make_shared<NilValue>();
+        if (typeid(*params[0]) == typeid(StringValue)) {
+                std::cout <<static_cast<const StringValue&>(*params[0]).getValue();
+                return std::make_shared<NilValue>();
+        } 
+        else {
+                std::string s = params[0]->toString();
+                std::cout << s;
+                return std::make_shared<NilValue>();
+        }
     }
 }
 ValuePtr displayLN(const std::vector<ValuePtr>& params, EvalEnv& env) {
@@ -104,18 +111,24 @@ ValuePtr displayLN(const std::vector<ValuePtr>& params, EvalEnv& env) {
     else if (num < 1)
             throw LispError("not enough arguments");
     else {
-            print(params, env);
+            display(params, env);
             std::cout << std::endl;
             return std::make_shared<NilValue>();
     }
 }
 ValuePtr error(const std::vector<ValuePtr>& params, EvalEnv& env) {
     int num = params.size();
-    if (num > 2)
+    if (num > 1)
             throw LispError("too many arguments");
-    else if (num < 2)
+    else if (num < 1)
             throw LispError("not enough arguments");
     else {
+            /*
+            if (typeid(*params[0]) != typeid(NumericValue))
+                throw LispError("not a int");
+            double temp = static_cast<const NumericValue&>(*params[0]).getValue();
+            if (fabs(temp - (int)temp) > 1e-5) throw LispError("not a int");
+            */
             throw LispError(params[0]->toString());
     }
 }
@@ -784,6 +797,11 @@ ValuePtr map(const std::vector<ValuePtr>& params, EvalEnv& env) {
        throw LispError("not enough arguments");
     else {
        std::vector<ValuePtr> List,answer;
+       auto r = islist(std::vector<ValuePtr>{params[1]}, env);
+       if (!static_cast<const BooleanValue&>(*r).getValue())
+       {
+        throw LispError("not a list");
+       }
        List.push_back(params[1]);
        auto& result = static_cast<BooleanValue&>(*(islist(List, env)));
        if (result.getValue()) {
@@ -939,7 +957,7 @@ ValuePtr Strcat(const std::vector<ValuePtr>& params, EvalEnv& env) // 字符串�
         {
            std::string s1 = static_cast<const StringValue&>(*params[0]).getValue();
            std::string s2 = static_cast<const StringValue&>(*params[1]).getValue();
-           return std::make_shared<StringValue>(s1 + s2);
+           return std::make_shared<StringValue>(s1 + s2,1);
 
         } else
            throw LispError("not a string");
@@ -958,8 +976,11 @@ ValuePtr Strcmp(const std::vector<ValuePtr>& params, EvalEnv& env) // 字符串�
                static_cast<const StringValue&>(*params[0]).getValue();
            std::string s2 =
                static_cast<const StringValue&>(*params[1]).getValue();
-           return std::make_shared<BooleanValue>(s1 > s2);
-
+           if (s1 > s2) return std::make_shared<NumericValue>(1);
+           else if (s1 == s2)
+               return std::make_shared<NumericValue>(0);
+           else
+               return std::make_shared<NumericValue>(-1);
         } else
            throw LispError("not a string");
     }
@@ -1017,7 +1038,7 @@ ValuePtr At(const std::vector<ValuePtr>& params, EvalEnv& env)// 下标访问
                static_cast<const NumericValue&>(*params[1]).getValue();
            if (fabs(i - (int)i) < 1e-5)
            {
-               if (i > s1.length() - 1) throw LispError("out of range");
+               if (i > s1.length() - 1||i<0) throw LispError("out of range");
                return std::make_shared<SymbolValue>(std::string{s1[i]});
            }
            else
